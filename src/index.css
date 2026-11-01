@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lowerDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float-up {
+  animation: floatUp 1s ease-out forwards;
+}
+
+.animate-float-up-delay {
+  animation: floatUp 1s ease-out 0.6s forwards;
+  opacity: 0;
+}
+
+.animate-lower-down {
+  animation: lowerDown 1.2s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.animate-lower-down-delay {
+  animation: floatUp 1s ease-out 1.2s forwards;
+  opacity: 0;
+}
+
+:root {
+  --bg-cream: #fcfbf7;
+  --text-main: #3b3a36;
+  --color-rose: #b87d74;
+  --color-sage: #7a8b79;
+  --color-gold: #c9a050;
+  --color-lavender: #94859e;
+  --font-serif: "Playfair Display", Georgia, serif;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-cream);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
