@@ -1,15 +1,22 @@
+import PageHeader from '../components/PageHeader';
+import { wedding } from '../data/wedding';
+
 export default function Travel() {
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', lineHeight: '1.7' }}>
-      <h1 style={{ fontFamily: 'serif', textAlign: 'center', color: '#2c3e50' }}>Travel & Accommodation</h1>
+    <div className="page travel">
+      <PageHeader title="Travel & Accommodation" />
 
-      <section style={{ marginBottom: '30px' }}>
-        <h2 style={{ color: '#8e44ad', borderBottom: '1px solid #ddd', paddingBottom: '5px' }}>The Venue</h2>
-        <p><strong>Conyngham Arms Hotel</strong><br />Main Street, Slane, Co. Meath, C15 A272</p>
+      <section className="section">
+        <h2 className="section-heading">The Venue</h2>
+        <p>
+          <strong>{wedding.venue}</strong>
+          <br />
+          {wedding.venueAddress}
+        </p>
       </section>
 
-      <section style={{ marginBottom: '30px' }}>
-        <h2 style={{ color: '#8e44ad', borderBottom: '1px solid #ddd', paddingBottom: '5px' }}>Where to Stay</h2>
+      <section className="section">
+        <h2 className="section-heading">Where to Stay</h2>
         <ul>
           <li><strong>Conyngham Arms Hotel:</strong> Rooms are held for immediate family/wedding party. Contact us for codes.</li>
           <li><strong>The Castleboy Lodge:</strong> 5-minute taxi from Slane village.</li>
@@ -18,16 +25,16 @@ export default function Travel() {
         </ul>
       </section>
 
-      <section style={{ marginBottom: '30px' }}>
-        <h2 style={{ color: '#8e44ad', borderBottom: '1px solid #ddd', paddingBottom: '5px' }}>Busses & Transport</h2>
+      <section className="section">
+        <h2 className="section-heading">Busses & Transport</h2>
         <p>
-          Bus Eireann routes connect Slane directly to Dublin and Drogheda. 
+          Bus Eireann routes connect Slane directly to Dublin and Drogheda.
           Taxi services are available, but we recommend booking local taxis in advance for late-night returns!
         </p>
       </section>
 
-      <section>
-        <h2 style={{ color: '#8e44ad', borderBottom: '1px solid #ddd', paddingBottom: '5px' }}>Parking</h2>
+      <section className="section">
+        <h2 className="section-heading">Parking</h2>
         <p>
           Complimentary parking is available directly behind the hotel for resident guests. Additional public parking is located in Slane main square.
         </p>
