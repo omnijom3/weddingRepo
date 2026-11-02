@@ -94,62 +94,34 @@
   z-index: 100;
 }
 
-.petal {
-  position: absolute;
-  width: 0;
-  height: 0;
-  animation: petalBurst 1.2s cubic-bezier(0.1, 0.9, 0.2, 1) both;
-  will-change: transform, opacity;
-}
-
-.petal-body {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  animation: petalDrift 5s cubic-bezier(0.37, 0, 0.63, 1) forwards;
-  will-change: transform;
-}
-
-@keyframes petalBurst {
-  from {
-    transform: translate3d(0, 0, 0) scale(0.3);
-    opacity: 0;
-  }
-  to {
-    transform: translate3d(var(--bx), var(--by), 0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes petalDrift {
+@keyframes petalFall {
   0% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
     opacity: 1;
+  }
+  25% {
+    transform: translate3d(calc(var(--sway) * 0.5), 25vh, 0) rotate(calc(var(--spin) * 0.25));
   }
   50% {
-    transform: translate3d(calc(var(--sway) * 0.5), calc(var(--fall) * 0.5), 0)
-      rotate(calc(var(--spin) * 0.5));
+    transform: translate3d(calc(var(--sway) * -0.5), 50vh, 0) rotate(calc(var(--spin) * 0.5));
   }
-  85% {
-    opacity: 0.9;
+  80% {
+    opacity: 0.85;
   }
   100% {
-    transform: translate3d(var(--sway), var(--fall), 0) rotate(var(--spin));
+    transform: translate3d(var(--sway), 105vh, 0) rotate(var(--spin));
     opacity: 0;
   }
 }
 
-@keyframes petalFade {
-  0% {
-    opacity: 0;
-  }
-  30% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.petal {
+  position: absolute;
+  top: 0;
+  animation-name: petalFall;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-iteration-count: 1;
+  will-change: transform;
 }
 
 .envelope {
@@ -316,11 +288,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .petal {
-    animation: petalFade 1.2s ease-in-out both;
-    animation-delay: inherit;
+    animation-duration: 0.01ms;
+    animation-delay: 0ms;
   }
 
-  .petal-body,
   .card-sliding-smooth,
   .envelope-hint-arrow {
     animation: none;

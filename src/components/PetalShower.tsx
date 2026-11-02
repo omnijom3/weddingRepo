@@ -1,59 +1,35 @@
 import { useState } from 'react';
 import { WILDFLOWER_COLOURS } from '../data/palette';
 
-export type Origin = { x: number; y: number };
-
-type Shape = 'round' | 'long' | 'leaf' | 'dot';
-
 type Petal = {
   id: number;
   colour: string;
-  shape: Shape;
-  size: number;
+  shape: 'round' | 'long' | 'leaf';
+  left: number;
   delay: number;
-  burstX: number;
-  burstY: number;
+  duration: number;
   sway: number;
   spin: number;
-  fallDuration: number;
+  size: number;
 };
 
-const BURST_DURATION_S = 1.2;
-const FLAP_DELAY_S = 0.3;
-const SHAPES: Shape[] = ['round', 'long', 'leaf', 'dot'];
-
-const randomBetween = (min: number, max: number) => min + Math.random() * (max - min);
-const pick = <T,>(items: readonly T[]): T => items[Math.floor(Math.random() * items.length)];
-
 function createPetals(count: number): Petal[] {
-  return Array.from({ length: count }, (_, id) => {
-    const shape = pick(SHAPES);
-    const angle = randomBetween(-165, -15) * (Math.PI / 180);
-    const distance = randomBetween(120, 320);
-    return {
-      id,
-      colour: pick(WILDFLOWER_COLOURS),
-      shape,
-      size: shape === 'dot' ? randomBetween(7, 11) : randomBetween(14, 26),
-      delay: FLAP_DELAY_S + Math.random() * 0.15,
-      burstX: Math.cos(angle) * distance,
-      burstY: Math.sin(angle) * distance,
-      sway: (Math.random() - 0.5) * 120,
-      spin: (Math.random() < 0.5 ? -1 : 1) * randomBetween(180, 540),
-      fallDuration: randomBetween(4, 6.5),
-    };
-  });
+  const shapes: Petal['shape'][] = ['round', 'long', 'leaf'];
+  return Array.from({ length: count }, (_, id) => ({
+    id,
+    colour: WILDFLOWER_COLOURS[Math.floor(Math.random() * WILDFLOWER_COLOURS.length)],
+    shape: shapes[Math.floor(Math.random() * shapes.length)],
+    left: Math.random() * 100,
+    delay: Math.random() * 3,
+    duration: 4 + Math.random() * 2.5,
+    sway: (Math.random() - 0.5) * 120,
+    spin: (Math.random() < 0.5 ? -1 : 1) * (180 + Math.random() * 360),
+    size: 14 + Math.random() * 14,
+  }));
 }
 
-function PetalSvg({ shape, colour }: { shape: Shape; colour: string }) {
-  if (shape === 'dot') {
-    return (
-      <svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden="true">
-        <circle cx="12" cy="12" r="10" fill={colour} />
-      </svg>
-    );
-  }
-  const paths: Record<Exclude<Shape, 'dot'>, string> = {
+function PetalSvg({ shape, colour }: { shape: Petal['shape']; colour: string }) {
+  const paths = {
     round: 'M12 2 C18 6 20 12 12 22 C4 12 6 6 12 2 Z',
     long: 'M12 1 C15 8 15 16 12 23 C9 16 9 8 12 1 Z',
     leaf: 'M3 12 C8 4 16 4 21 12 C16 20 8 20 3 12 Z',
@@ -65,7 +41,7 @@ function PetalSvg({ shape, colour }: { shape: Shape; colour: string }) {
   );
 }
 
-export default function PetalShower({ count = 50, origin }: { count?: number; origin: Origin }) {
+export default function PetalShower({ count = 50 }: { count?: number }) {
   const [petals] = useState(() => createPetals(count));
 
   return (
@@ -75,29 +51,16 @@ export default function PetalShower({ count = 50, origin }: { count?: number; or
           key={petal.id}
           className="petal"
           style={{
-            left: origin.x,
-            top: origin.y,
+            left: `${petal.left}%`,
+            width: `${petal.size}px`,
+            height: `${petal.size}px`,
             animationDelay: `${petal.delay}s`,
-            ['--bx' as string]: `${petal.burstX}px`,
-            ['--by' as string]: `${petal.burstY}px`,
+            animationDuration: `${petal.duration}s`,
             ['--sway' as string]: `${petal.sway}px`,
             ['--spin' as string]: `${petal.spin}deg`,
-            ['--fall' as string]: `calc(105vh - (${origin.y + petal.burstY}px))`,
           }}
         >
-          <span
-            className="petal-body"
-            style={{
-              width: petal.size,
-              height: petal.size,
-              marginLeft: -petal.size / 2,
-              marginTop: -petal.size / 2,
-              animationDelay: `${petal.delay + BURST_DURATION_S}s`,
-              animationDuration: `${petal.fallDuration}s`,
-            }}
-          >
-            <PetalSvg shape={petal.shape} colour={petal.colour} />
-          </span>
+          <PetalSvg shape={petal.shape} colour={petal.colour} />
         </span>
       ))}
     </div>

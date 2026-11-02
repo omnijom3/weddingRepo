@@ -88,6 +88,19 @@ body {
   padding: 0 20px;
 }
 
+.site-footer {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-body);
+}
+
+.site-footer a {
+  color: var(--text-body);
+}
+
 .page {
   max-width: 800px;
   margin: 0 auto;

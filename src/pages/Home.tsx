@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Envelope from '../components/Envelope';
-import PetalShower, { type Origin } from '../components/PetalShower';
+import PetalShower from '../components/PetalShower';
 import './Home.css';
 
 function InvitationCard() {
@@ -41,16 +41,6 @@ function InvitationCard() {
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
-  const [origin, setOrigin] = useState<Origin>({ x: 0, y: 0 });
-  const sceneRef = useRef<HTMLDivElement>(null);
-
-  const handleOpen = () => {
-    const rect = sceneRef.current?.getBoundingClientRect();
-    if (rect) {
-      setOrigin({ x: rect.left + rect.width / 2, y: rect.top + rect.height * 0.35 });
-    }
-    setIsOpen(true);
-  };
 
   return (
     <div
@@ -64,10 +54,10 @@ export default function Home() {
         overflow: 'hidden',
       }}
     >
-      {isOpen && <PetalShower origin={origin} />}
+      {isOpen && <PetalShower />}
 
-      <div className="envelope-scene" ref={sceneRef}>
-        <Envelope isOpen={isOpen} onOpen={handleOpen}>
+      <div className="envelope-scene">
+        <Envelope isOpen={isOpen} onOpen={() => setIsOpen(true)}>
           {isOpen && <InvitationCard />}
         </Envelope>
       </div>
