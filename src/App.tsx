@@ -1,9 +1,11 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
-import Schedule from './pages/Schedule';
-import RSVP from './pages/RSVP';
-import Travel from './pages/Travel';
-import FAQ from './pages/FAQ';
+
+const Schedule = lazy(() => import('./pages/Schedule'));
+const RSVP = lazy(() => import('./pages/RSVP'));
+const Travel = lazy(() => import('./pages/Travel'));
+const FAQ = lazy(() => import('./pages/FAQ'));
 
 export default function App() {
   return (
@@ -27,13 +29,15 @@ export default function App() {
 
         {/* Page Content */}
         <main style={{ maxWidth: '1000px', margin: '30px auto', padding: '0 20px' }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/schedule" element={<Schedule />} />
-            <Route path="/rsvp" element={<RSVP />} />
-            <Route path="/travel" element={<Travel />} />
-            <Route path="/faq" element={<FAQ />} />
-          </Routes>
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/schedule" element={<Schedule />} />
+              <Route path="/rsvp" element={<RSVP />} />
+              <Route path="/travel" element={<Travel />} />
+              <Route path="/faq" element={<FAQ />} />
+            </Routes>
+          </Suspense>
         </main>
       </div>
       

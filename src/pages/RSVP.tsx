@@ -1,8 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../amplify/data/resource';
-
-const client = generateClient<Schema>();
+import { client } from '../lib/amplifyClient';
 
 export default function RSVP() {
   const [fullName, setFullName] = useState('');
