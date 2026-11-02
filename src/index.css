@@ -8,22 +8,27 @@ body,
 }
 
 :root {
-  --bg-cream: #fcfbf7;
-  --text-main: #3b3a36;
-  --text-body: #555;
-  --color-rose: #b87d74;
-  --color-rose-dark: #a36a61;
-  --color-sage: #7a8b79;
-  --color-gold: #c9a050;
-  --color-border: #e8e2d5;
+  --bg-page: #dfe7d8;
+  --bg-cream: #f7f8f1;
+  --text-main: #2f3a2f;
+  --text-body: #46503f;
+  --color-rose: #a35a52;
+  --color-rose-dark: #8a4a43;
+  --color-sage: #4d6a4c;
+  --color-gold: #d6a93a;
+  --color-border: #c3cfbb;
   --font-serif: Georgia, 'Times New Roman', serif;
   --shadow-soft: 0 2px 5px rgba(0, 0, 0, 0.05);
-  --shadow-rose: 0 4px 12px rgba(184, 125, 116, 0.3);
+  --shadow-rose: 0 4px 12px rgba(163, 90, 82, 0.3);
+  --envelope-body: #f3efe2;
+  --envelope-flap: #e4dcc6;
+  --envelope-pocket: #e8e1cf;
+  --envelope-border: #cfc5a8;
 }
 
 body {
   margin: 0;
-  background-color: var(--bg-cream);
+  background-color: var(--bg-page);
   color: var(--text-main);
   font-family:
     system-ui,
@@ -37,7 +42,9 @@ body {
 }
 
 .site-nav {
-  background-color: #ffffff;
+  position: relative;
+  z-index: 2;
+  background-color: var(--bg-cream);
   border-bottom: 1px solid var(--color-border);
   padding: 15px 30px;
 }
@@ -74,6 +81,8 @@ body {
 }
 
 .site-main {
+  position: relative;
+  z-index: 1;
   max-width: 1000px;
   margin: 30px auto;
   padding: 0 20px;
@@ -107,7 +116,7 @@ body {
 
 .section-heading {
   color: var(--color-rose);
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-border);
   padding-bottom: 5px;
 }
 

@@ -11,11 +11,23 @@ type EnvelopeProps = {
 function Bow() {
   return (
     <svg className="envelope-bow" viewBox="0 0 120 80" aria-hidden="true">
-      <path d="M60 40 C40 10 8 8 10 30 C12 48 40 42 60 40 Z" fill="#b87d74" />
-      <path d="M60 40 C80 10 112 8 110 30 C108 48 80 42 60 40 Z" fill="#b87d74" />
-      <path d="M60 40 C44 56 22 70 30 76 C38 80 52 56 60 40 Z" fill="#a36a61" />
-      <path d="M60 40 C76 56 98 70 90 76 C82 80 68 56 60 40 Z" fill="#a36a61" />
-      <circle cx="60" cy="40" r="9" fill="#8f554c" />
+      <path
+        d="M60 40 C40 10 8 8 10 30 C12 48 40 42 60 40 Z"
+        style={{ fill: 'var(--color-rose)' }}
+      />
+      <path
+        d="M60 40 C80 10 112 8 110 30 C108 48 80 42 60 40 Z"
+        style={{ fill: 'var(--color-rose)' }}
+      />
+      <path
+        d="M60 40 C44 56 22 70 30 76 C38 80 52 56 60 40 Z"
+        style={{ fill: 'var(--color-rose-dark)' }}
+      />
+      <path
+        d="M60 40 C76 56 98 70 90 76 C82 80 68 56 60 40 Z"
+        style={{ fill: 'var(--color-rose-dark)' }}
+      />
+      <circle cx="60" cy="40" r="9" style={{ fill: 'var(--color-rose-dark)' }} />
     </svg>
   );
 }

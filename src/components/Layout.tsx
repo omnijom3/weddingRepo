@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import FloralBorder from './FloralBorder';
 
 const navItems = [
   { to: '/', label: 'Home', end: true },
@@ -12,6 +13,7 @@ const navItems = [
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="site">
+      <FloralBorder />
       <nav className="site-nav">
         <div className="site-nav-inner">
           <Link to="/" className="site-brand">
