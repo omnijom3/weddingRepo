@@ -11,6 +11,14 @@ const schema = a.schema({
     })
     .identifier(['householdCode'])
     .authorization((allow) => [allow.publicApiKey()]), // Allows guests to read/write using code
+  RSVP: a
+    .model({
+      fullName: a.string().required(),
+      attending: a.boolean().required(),
+      mealChoice: a.string().required(),
+      dietaryNotes: a.string(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
