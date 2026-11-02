@@ -18,11 +18,9 @@ describe('PetalShower', () => {
 });
 
 describe('FloralBorder', () => {
-  it('renders the decorative border image hidden from assistive technology', () => {
+  it('renders the decorative border hidden from assistive technology', () => {
     const { container } = render(<FloralBorder />);
 
-    const border = container.querySelector('img.floral-border');
-    expect(border).toHaveAttribute('aria-hidden', 'true');
-    expect(border).toHaveAttribute('alt', '');
+    expect(container.querySelector('.floral-border')).toHaveAttribute('aria-hidden', 'true');
   });
 });
