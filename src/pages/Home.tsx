@@ -1,23 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import PetalShower from '../components/PetalShower';
 import './Home.css';
-
-const PETAL_EMOJIS = ['🌸', '🌿', '🌼', '🌺', '🍃', '🌾', '🌻'];
-
-function createPetals(count: number) {
-  return Array.from({ length: count }, (_, i) => ({
-    id: i,
-    emoji: PETAL_EMOJIS[Math.floor(Math.random() * PETAL_EMOJIS.length)],
-    left: Math.random() * 95,
-    delay: Math.random(),
-    duration: 4 + Math.random() * 2.5,
-    size: 0.9 + Math.random() * 0.7,
-  }));
-}
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
-  const [petals] = useState(() => createPetals(50));
 
   return (
     <div
@@ -31,24 +18,7 @@ export default function Home() {
         overflow: 'hidden',
       }}
     >
-      {isOpen && (
-        <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 100 }}>
-          {petals.map((petal) => (
-            <span
-              key={petal.id}
-              className="falling-petal"
-              style={{
-                left: `${petal.left}%`,
-                fontSize: `${petal.size}rem`,
-                animationDelay: `${petal.delay}s`,
-                animationDuration: `${petal.duration}s`,
-              }}
-            >
-              {petal.emoji}
-            </span>
-          ))}
-        </div>
-      )}
+      {isOpen && <PetalShower />}
 
       <div className="envelope-scene">
         {!isOpen ? (

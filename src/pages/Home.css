@@ -56,30 +56,46 @@
   animation: envelopeFadeOut 0.8s 0.9s forwards ease-out;
 }
 
-@keyframes floatDown {
+.petal-shower {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 100;
+}
+
+@keyframes petalFall {
   0% {
-    transform: translateY(-10vh) rotate(0deg);
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
     opacity: 1;
   }
+  25% {
+    transform: translate3d(calc(var(--sway) * 0.5), 25vh, 0) rotate(calc(var(--spin) * 0.25));
+  }
+  50% {
+    transform: translate3d(calc(var(--sway) * -0.5), 50vh, 0) rotate(calc(var(--spin) * 0.5));
+  }
   80% {
-    opacity: 0.8;
+    opacity: 0.85;
   }
   100% {
-    transform: translateY(85vh) rotate(360deg);
+    transform: translate3d(var(--sway), 105vh, 0) rotate(var(--spin));
     opacity: 0;
   }
 }
 
-.falling-petal {
+.petal {
   position: absolute;
-  top: -20px;
-  pointer-events: none;
-  z-index: 50;
-  animation: floatDown 5s ease-out forwards;
+  top: 0;
+  animation-name: petalFall;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-iteration-count: 1;
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .falling-petal,
+  .petal,
   .flap-opening-slow,
   .card-sliding-smooth,
   .envelope-fading-smooth {
