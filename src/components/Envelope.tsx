@@ -39,13 +39,6 @@ export default function Envelope({ isOpen, onOpen, children }: EnvelopeProps) {
         <Bow />
       </button>
 
-      {!isOpen && (
-        <div className="envelope-caption">
-          <span className="envelope-caption-title">Rosie &amp; Joe</span>
-          <span className="envelope-caption-hint">Tap the bow to open</span>
-        </div>
-      )}
-
       {children}
     </div>
   );

@@ -174,31 +174,6 @@
   filter: drop-shadow(0 6px 10px rgba(184, 125, 116, 0.35));
 }
 
-.envelope-caption {
-  position: absolute;
-  top: 210px;
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  z-index: 4;
-  pointer-events: none;
-}
-
-.envelope-caption-title {
-  font-family: var(--font-serif);
-  font-size: 1.4rem;
-  color: var(--text-main);
-}
-
-.envelope-caption-hint {
-  font-size: 0.9rem;
-  font-style: italic;
-  color: var(--color-sage);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .petal,
   .card-sliding-smooth {
