@@ -213,10 +213,6 @@ export default function Home() {
                 zIndex: 10,
               }}
             >
-              <div style={{ fontSize: '1.1rem', color: '#b87d74', marginBottom: '8px' }}>
-                🌿 August Wildflowers Collection 🌿
-              </div>
-
               <h1
                 style={{
                   fontSize: '2.5rem',
