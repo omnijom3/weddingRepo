@@ -1,123 +1,42 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import './Home.css';
+
+const PETAL_EMOJIS = ['🌸', '🌿', '🌼', '🌺', '🍃', '🌾', '🌻'];
+
+function createPetals(count: number) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    emoji: PETAL_EMOJIS[Math.floor(Math.random() * PETAL_EMOJIS.length)],
+    left: Math.random() * 95,
+    delay: Math.random(),
+    duration: 4 + Math.random() * 2.5,
+    size: 0.9 + Math.random() * 0.7,
+  }));
+}
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
+  const [petals] = useState(() => createPetals(50));
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '75vh', padding: '10px 0', position: 'relative', overflow: 'hidden' }}>
-      <style>{`
-        .envelope-scene {
-          position: relative;
-          width: 100%;
-          max-width: 550px;
-          height: 350px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        /* Top flap 3D fold open */
-        @keyframes openFlapSlow {
-          0% {
-            transform: rotateX(0deg);
-          }
-          100% {
-            transform: rotateX(180deg);
-          }
-        }
-
-        .flap-opening-slow {
-          transform-origin: top center;
-          animation: openFlapSlow 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        /* Invitation card slide out */
-        @keyframes slideOutCardSmooth {
-          0% {
-            transform: translateY(30px);
-            opacity: 0;
-          }
-          30% {
-            transform: translateY(10px);
-            opacity: 0.5;
-          }
-          100% {
-            transform: translateY(-10px);
-            opacity: 1;
-          }
-        }
-
-        .card-sliding-smooth {
-          animation: slideOutCardSmooth 1.6s 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          opacity: 0;
-        }
-
-        /* Clean envelope settle out */
-        @keyframes envelopeFadeOut {
-          0% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0;
-            pointer-events: none;
-          }
-        }
-
-        .envelope-fading-smooth {
-          animation: envelopeFadeOut 0.8s 0.9s forwards ease-out;
-        }
-
-        /* --- Falling Wildflowers Animation --- */
-        @keyframes floatDown {
-          0% {
-            transform: translateY(-10vh) rotate(0deg);
-            opacity: 1;
-          }
-          80% {
-            opacity: 0.8;
-          }
-          100% {
-            transform: translateY(85vh) rotate(360deg);
-            opacity: 0;
-          }
-        }
-
-        .falling-petal {
-          position: absolute;
-          top: -20px;
-          pointer-events: none;
-          z-index: 50;
-          animation: floatDown 5s ease-out forwards;
-        }
-      `}</style>
-
-      {/* Dynamic Floating Wildflower Petals (50 items) */}
       {isOpen && (
         <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 100 }}>
-          {Array.from({ length: 50 }).map((_, i) => {
-            const emojis = ['🌸', '🌿', '🌼', '🌺', '🍃', '🌾', '🌻'];
-            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-            const randomLeft = Math.random() * 95;
-            const randomDelay = Math.random() * 1.0;
-            const randomDuration = 4 + Math.random() * 2.5;
-            const randomSize = 0.9 + Math.random() * 0.7;
-
-            return (
-              <span
-                key={i}
-                className="falling-petal"
-                style={{
-                  left: `${randomLeft}%`,
-                  fontSize: `${randomSize}rem`,
-                  animationDelay: `${randomDelay}s`,
-                  animationDuration: `${randomDuration}s`,
-                }}
-              >
-                {randomEmoji}
-              </span>
-            );
-          })}
+          {petals.map((petal) => (
+            <span
+              key={petal.id}
+              className="falling-petal"
+              style={{
+                left: `${petal.left}%`,
+                fontSize: `${petal.size}rem`,
+                animationDelay: `${petal.delay}s`,
+                animationDuration: `${petal.duration}s`,
+              }}
+            >
+              {petal.emoji}
+            </span>
+          ))}
         </div>
       )}
 

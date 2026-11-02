@@ -1,0 +1,89 @@
+.envelope-scene {
+  position: relative;
+  width: 100%;
+  max-width: 550px;
+  height: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes openFlapSlow {
+  0% {
+    transform: rotateX(0deg);
+  }
+  100% {
+    transform: rotateX(180deg);
+  }
+}
+
+.flap-opening-slow {
+  transform-origin: top center;
+  animation: openFlapSlow 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideOutCardSmooth {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  30% {
+    transform: translateY(10px);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+.card-sliding-smooth {
+  animation: slideOutCardSmooth 1.6s 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+@keyframes envelopeFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.envelope-fading-smooth {
+  animation: envelopeFadeOut 0.8s 0.9s forwards ease-out;
+}
+
+@keyframes floatDown {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(85vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.falling-petal {
+  position: absolute;
+  top: -20px;
+  pointer-events: none;
+  z-index: 50;
+  animation: floatDown 5s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .falling-petal,
+  .flap-opening-slow,
+  .card-sliding-smooth,
+  .envelope-fading-smooth {
+    animation-duration: 0.01ms;
+    animation-delay: 0ms;
+  }
+}
