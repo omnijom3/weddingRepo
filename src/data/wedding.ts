@@ -4,6 +4,7 @@ export const wedding = {
   venue: 'Conyngham Arms Hotel',
   venueLocation: 'Slane, Co. Meath',
   venueAddress: 'Main Street, Slane, Co. Meath, C15 A272',
+  venueCoordinates: { lat: 53.70884, lng: -6.54457 },
   ceremonyTime: '1:30 PM',
   rsvpDeadline: 'June 1st, 2027',
 } as const;

@@ -1,6 +1,11 @@
 import PageHeader from '../components/PageHeader';
 import { wedding } from '../data/wedding';
 
+const { lat, lng } = wedding.venueCoordinates;
+const MAP_DELTA = 0.01;
+const mapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - MAP_DELTA},${lat - MAP_DELTA},${lng + MAP_DELTA},${lat + MAP_DELTA}&layer=mapnik&marker=${lat},${lng}`;
+const mapsLinkUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+
 export default function Travel() {
   return (
     <div className="page travel">
@@ -12,6 +17,20 @@ export default function Travel() {
           <strong>{wedding.venue}</strong>
           <br />
           {wedding.venueAddress}
+        </p>
+        <iframe
+          title={`Map showing ${wedding.venue}`}
+          src={mapEmbedUrl}
+          width="100%"
+          height="300"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          style={{ border: 0, borderRadius: '12px', marginBottom: '12px' }}
+        />
+        <p>
+          <a href={mapsLinkUrl} target="_blank" rel="noopener noreferrer">
+            Open in Google Maps
+          </a>
         </p>
       </section>
 
