@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import CinematicIntro from '../components/CinematicIntro';
 import PageHeader from '../components/PageHeader';
+import { introLines } from '../data/intro';
+import { prefersReducedMotion } from '../lib/motion';
 import { findHousehold, rememberHouseholdCode, type Household } from '../lib/households';
 import Home from './Home';
 
@@ -10,9 +13,14 @@ type LoadState =
   | { status: 'missing' }
   | { status: 'error' };
 
+function introSeenKey(code: string) {
+  return `intro-seen:${code}`;
+}
+
 export default function Invite() {
   const { code = '' } = useParams();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
+  const [introDone, setIntroDone] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -37,8 +45,29 @@ export default function Invite() {
     };
   }, [code]);
 
+  const markIntroDone = useCallback(() => {
+    sessionStorage.setItem(introSeenKey(code), 'true');
+    setIntroDone(true);
+  }, [code]);
+
+  useEffect(() => {
+    if (sessionStorage.getItem(introSeenKey(code)) || prefersReducedMotion()) {
+      setIntroDone(true);
+    }
+  }, [code]);
+
   if (state.status === 'loading') return null;
-  if (state.status === 'found') return <Home household={state.household} />;
+
+  if (state.status === 'found') {
+    return (
+      <>
+        {!introDone && (
+          <CinematicIntro lines={introLines(state.household.greetingName)} onDone={markIntroDone} />
+        )}
+        <Home household={state.household} />
+      </>
+    );
+  }
 
   return (
     <div className="card rsvp-card">
