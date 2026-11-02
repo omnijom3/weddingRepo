@@ -4,11 +4,31 @@ import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import RSVP from './RSVP';
 
-const { create } = vi.hoisted(() => ({ create: vi.fn() }));
+const { householdGet, rsvpGet, rsvpCreate, rsvpUpdate } = vi.hoisted(() => ({
+  householdGet: vi.fn(),
+  rsvpGet: vi.fn(),
+  rsvpCreate: vi.fn(),
+  rsvpUpdate: vi.fn(),
+}));
 
 vi.mock('../lib/amplifyClient', () => ({
-  client: { models: { RSVP: { create } } },
+  client: {
+    models: {
+      Household: { get: householdGet },
+      RSVP: { get: rsvpGet, create: rsvpCreate, update: rsvpUpdate },
+    },
+  },
 }));
+
+const household = {
+  householdCode: 'abc123',
+  greetingName: 'The Doe Family',
+  side: 'both',
+  guests: [
+    { id: 'g1', name: 'Jane Doe' },
+    { id: 'g2', name: 'Tom Doe' },
+  ],
+};
 
 function renderRSVP() {
   return render(
@@ -18,64 +38,98 @@ function renderRSVP() {
   );
 }
 
+async function enterCode(user: ReturnType<typeof userEvent.setup>, code = 'abc123') {
+  await user.type(screen.getByLabelText(/invite code/i), code);
+  await user.click(screen.getByRole('button', { name: /continue/i }));
+  await screen.findByText('Jane Doe');
+}
+
 describe('RSVP form', () => {
   beforeEach(() => {
-    create.mockReset();
+    sessionStorage.clear();
+    householdGet.mockReset().mockResolvedValue({ data: household, errors: undefined });
+    rsvpGet.mockReset().mockResolvedValue({ data: null, errors: undefined });
+    rsvpCreate.mockReset().mockResolvedValue({ data: {}, errors: undefined });
+    rsvpUpdate.mockReset().mockResolvedValue({ data: {}, errors: undefined });
   });
 
-  it('submits the attending guest details and shows the thank-you message', async () => {
-    create.mockResolvedValue({});
+  it('shows an error when the invite code is not recognised', async () => {
+    householdGet.mockResolvedValue({ data: null, errors: undefined });
     const user = userEvent.setup();
     renderRSVP();
 
-    await user.type(screen.getByLabelText(/full name/i), 'John & Sarah Smith');
-    await user.selectOptions(screen.getByLabelText(/meal selection/i), 'Salmon');
+    await user.type(screen.getByLabelText(/invite code/i), 'NOPE');
+    await user.click(screen.getByRole('button', { name: /continue/i }));
+
+    expect(await screen.findByText(/could not find that invite code/i)).toBeInTheDocument();
+  });
+
+  it('creates one RSVP per guest and shows the thank-you message', async () => {
+    const user = userEvent.setup();
+    renderRSVP();
+
+    await enterCode(user);
     await user.click(screen.getByRole('button', { name: /send rsvp/i }));
 
-    await waitFor(() =>
-      expect(screen.getByText(/thank you, john & sarah smith/i)).toBeInTheDocument(),
-    );
-    expect(create).toHaveBeenCalledWith({
-      fullName: 'John & Sarah Smith',
+    await waitFor(() => expect(screen.getByText(/thank you, the doe family/i)).toBeInTheDocument());
+    expect(rsvpCreate).toHaveBeenCalledTimes(2);
+    expect(rsvpCreate).toHaveBeenCalledWith({
+      householdCode: 'abc123',
+      guestId: 'g1',
+      guestName: 'Jane Doe',
+      side: 'both',
       attending: true,
-      mealChoice: 'Salmon',
+      mealChoice: 'Beef',
       dietaryNotes: 'None',
     });
   });
 
-  it('shows an error banner when the request fails', async () => {
-    create.mockRejectedValue(new Error('network'));
+  it('updates an existing RSVP instead of creating a duplicate', async () => {
+    rsvpGet.mockImplementation(async ({ guestId }: { guestId: string }) => ({
+      data: guestId === 'g1' ? { householdCode: 'abc123', guestId } : null,
+      errors: undefined,
+    }));
     const user = userEvent.setup();
     renderRSVP();
 
-    await user.type(screen.getByLabelText(/full name/i), 'Jane Doe');
+    await enterCode(user);
+    await user.click(screen.getByRole('button', { name: /send rsvp/i }));
+
+    await waitFor(() => expect(rsvpUpdate).toHaveBeenCalledTimes(1));
+    expect(rsvpUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ householdCode: 'abc123', guestId: 'g1' }),
+    );
+    expect(rsvpCreate).toHaveBeenCalledTimes(1);
+    expect(rsvpCreate).toHaveBeenCalledWith(expect.objectContaining({ guestId: 'g2' }));
+  });
+
+  it('records N/A for a guest who declines', async () => {
+    const user = userEvent.setup();
+    renderRSVP();
+
+    await enterCode(user);
+    await user.click(screen.getAllByLabelText(/regretfully declines/i)[1]);
+    expect(screen.getAllByLabelText(/meal selection/i)).toHaveLength(1);
+
+    await user.click(screen.getByRole('button', { name: /send rsvp/i }));
+
+    await waitFor(() => expect(rsvpCreate).toHaveBeenCalledTimes(2));
+    expect(rsvpCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ guestId: 'g2', attending: false, mealChoice: 'N/A' }),
+    );
+  });
+
+  it('shows an error banner when the request fails', async () => {
+    rsvpCreate.mockRejectedValue(new Error('network'));
+    const user = userEvent.setup();
+    renderRSVP();
+
+    await enterCode(user);
     await user.click(screen.getByRole('button', { name: /send rsvp/i }));
 
     expect(
       await screen.findByText(/something went wrong submitting your rsvp/i),
     ).toBeInTheDocument();
     expect(screen.queryByText(/thank you/i)).not.toBeInTheDocument();
-  });
-
-  it('hides meal fields and records N/A when declining', async () => {
-    create.mockResolvedValue({});
-    const user = userEvent.setup();
-    renderRSVP();
-
-    await user.type(screen.getByLabelText(/full name/i), 'Jane Doe');
-    await user.click(screen.getByLabelText(/regretfully declines/i));
-
-    expect(screen.queryByLabelText(/meal selection/i)).not.toBeInTheDocument();
-    expect(screen.queryByLabelText(/dietary requirements/i)).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: /send rsvp/i }));
-
-    await waitFor(() => expect(create).toHaveBeenCalled());
-    expect(create).toHaveBeenCalledWith({
-      fullName: 'Jane Doe',
-      attending: false,
-      mealChoice: 'N/A',
-      dietaryNotes: 'None',
-    });
   });
 });

@@ -7,6 +7,7 @@ const Schedule = lazy(() => import('./pages/Schedule'));
 const RSVP = lazy(() => import('./pages/RSVP'));
 const Travel = lazy(() => import('./pages/Travel'));
 const FAQ = lazy(() => import('./pages/FAQ'));
+const Invite = lazy(() => import('./pages/Invite'));
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/rsvp" element={<RSVP />} />
             <Route path="/travel" element={<Travel />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/i/:code" element={<Invite />} />
           </Routes>
         </Suspense>
       </Layout>

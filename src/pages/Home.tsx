@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Envelope from '../components/Envelope';
 import PetalShower from '../components/PetalShower';
+import type { Household } from '../lib/households';
 import './Home.css';
 
-function InvitationCard() {
+function InvitationCard({ household }: { household?: Household }) {
   return (
     <div className="invite-card card-sliding-smooth">
       <h1 className="invite-title">Rosie & Joe</h1>
       <p className="invite-subtitle">Are Getting Married</p>
+
+      {household && <p className="invite-greeting">Dear {household.greetingName},</p>}
 
       <div className="invite-details">
         <p>
@@ -39,7 +42,7 @@ function InvitationCard() {
   );
 }
 
-export default function Home() {
+export default function Home({ household }: { household?: Household }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -58,7 +61,7 @@ export default function Home() {
 
       <div className="envelope-scene">
         <Envelope isOpen={isOpen} onOpen={() => setIsOpen(true)}>
-          {isOpen && <InvitationCard />}
+          {isOpen && <InvitationCard household={household} />}
         </Envelope>
       </div>
     </div>

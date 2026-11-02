@@ -49,6 +49,13 @@
   margin: 0 0 20px;
 }
 
+.invite-greeting {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  color: var(--text-main);
+  margin: 0 0 16px;
+}
+
 .invite-details {
   background-color: #ffffff;
   border-left: 3px solid var(--color-gold);
