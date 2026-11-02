@@ -119,6 +119,18 @@ describe('RSVP form', () => {
     );
   });
 
+  it('plays a photo pass when a side is chosen', async () => {
+    const user = userEvent.setup();
+    const { container } = renderRSVP();
+
+    await enterCode(user);
+    expect(container.querySelector('.photo-animation')).not.toBeInTheDocument();
+
+    await user.click(screen.getByLabelText("Rosie's"));
+
+    expect(container.querySelector('.photo-animation--rosie')).toBeInTheDocument();
+  });
+
   it('shows an error banner when the request fails', async () => {
     rsvpCreate.mockRejectedValue(new Error('network'));
     const user = userEvent.setup();

@@ -1,5 +1,7 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import PageHeader from '../components/PageHeader';
+import PhotoAnimation from '../components/PhotoAnimation';
+import type { PhotoVariant } from '../data/animations';
 import { mealOptions, wedding } from '../data/wedding';
 import {
   findHousehold,
@@ -33,6 +35,10 @@ export default function RSVP() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [photo, setPhoto] = useState<{ id: number; variant: PhotoVariant } | null>(null);
+  const triggerPhoto = (variant: PhotoVariant) => setPhoto({ id: Date.now(), variant });
+  const clearPhoto = useCallback(() => setPhoto(null), []);
 
   useEffect(() => {
     const remembered = rememberedHouseholdCode();
@@ -96,6 +102,7 @@ export default function RSVP() {
     try {
       await saveRsvps(household.householdCode, side, answers);
       setIsSubmitted(true);
+      triggerPhoto(side);
     } catch (err: unknown) {
       console.error('Error submitting RSVP:', err);
       setErrorMessage('Something went wrong submitting your RSVP. Please try again.');
@@ -134,6 +141,7 @@ export default function RSVP() {
 
   return (
     <div className="card rsvp-card">
+      {photo && <PhotoAnimation key={photo.id} variant={photo.variant} onDone={clearPhoto} />}
       <PageHeader title="RSVP" />
       <p className="rsvp-deadline">Please respond by {wedding.rsvpDeadline}</p>
 
@@ -165,7 +173,10 @@ export default function RSVP() {
                     name="side"
                     value={value}
                     checked={side === value}
-                    onChange={() => setSide(value)}
+                    onChange={() => {
+                      setSide(value);
+                      triggerPhoto(value);
+                    }}
                   />
                   {label}
                 </label>
@@ -206,7 +217,10 @@ export default function RSVP() {
                   <select
                     id={`meal-${guest.guestId}`}
                     value={guest.mealChoice}
-                    onChange={(e) => updateGuest(guest.guestId, { mealChoice: e.target.value })}
+                    onChange={(e) => {
+                      updateGuest(guest.guestId, { mealChoice: e.target.value });
+                      triggerPhoto(side);
+                    }}
                     className="form-input"
                   >
                     {mealOptions.map((meal) => (
