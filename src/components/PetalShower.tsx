@@ -29,7 +29,7 @@ function createPetals(count: number): Petal[] {
     shape: shapes[Math.floor(Math.random() * shapes.length)],
     left: Math.random() * 100,
     delay: Math.random() * 3,
-    duration: 6 + Math.random() * 4,
+    duration: 4 + Math.random() * 2.5,
     sway: (Math.random() - 0.5) * 120,
     spin: (Math.random() < 0.5 ? -1 : 1) * (180 + Math.random() * 360),
     size: 14 + Math.random() * 14,
@@ -49,7 +49,7 @@ function PetalSvg({ shape, colour }: { shape: Petal['shape']; colour: string }) 
   );
 }
 
-export default function PetalShower({ count = 30 }: { count?: number }) {
+export default function PetalShower({ count = 50 }: { count?: number }) {
   const [petals] = useState(() => createPetals(count));
 
   return (
