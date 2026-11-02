@@ -20,7 +20,17 @@ export default function Home() {
   const [petals] = useState(() => createPetals(50));
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '75vh', padding: '10px 0', position: 'relative', overflow: 'hidden' }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '75vh',
+        padding: '10px 0',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
       {isOpen && (
         <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 100 }}>
           {petals.map((petal) => (
@@ -106,7 +116,14 @@ export default function Home() {
               >
                 💌
               </div>
-              <h2 style={{ fontFamily: 'serif', color: '#3b3a36', fontSize: '1.4rem', margin: '0 0 4px 0' }}>
+              <h2
+                style={{
+                  fontFamily: 'serif',
+                  color: '#3b3a36',
+                  fontSize: '1.4rem',
+                  margin: '0 0 4px 0',
+                }}
+              >
                 Rosie & Joe
               </h2>
               <p style={{ color: '#7a8b79', fontStyle: 'italic', margin: 0, fontSize: '0.9rem' }}>
@@ -132,7 +149,6 @@ export default function Home() {
         ) : (
           /* --- Opening Animation Sequence --- */
           <div style={{ position: 'relative', width: '100%', height: '300px' }}>
-            
             {/* Envelope Background Container */}
             <div
               className="envelope-fading-smooth"
@@ -201,25 +217,64 @@ export default function Home() {
                 🌿 August Wildflowers Collection 🌿
               </div>
 
-              <h1 style={{ fontSize: '2.5rem', fontFamily: 'serif', color: '#3b3a36', marginBottom: '4px' }}>
+              <h1
+                style={{
+                  fontSize: '2.5rem',
+                  fontFamily: 'serif',
+                  color: '#3b3a36',
+                  marginBottom: '4px',
+                }}
+              >
                 Rosie & Joe
               </h1>
-              <p style={{ fontSize: '0.95rem', color: '#7a8b79', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>
+              <p
+                style={{
+                  fontSize: '0.95rem',
+                  color: '#7a8b79',
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  marginBottom: '20px',
+                }}
+              >
                 Are Getting Married
               </p>
 
-              <div style={{ backgroundColor: '#fcfbf7', borderLeft: '3px solid #c9a050', padding: '15px', margin: '20px 0', textAlign: 'left', borderRadius: '4px' }}>
-                <p style={{ margin: '0 0 6px 0', fontSize: '1rem' }}><strong>Date:</strong> Friday, August 13th, 2027</p>
-                <p style={{ margin: '0 0 6px 0', fontSize: '1rem' }}><strong>Venue:</strong> Conyngham Arms Hotel, Slane, Co. Meath</p>
-                <p style={{ margin: 0, fontSize: '1rem' }}><strong>Ceremony:</strong> 1:30 PM Sharp</p>
+              <div
+                style={{
+                  backgroundColor: '#fcfbf7',
+                  borderLeft: '3px solid #c9a050',
+                  padding: '15px',
+                  margin: '20px 0',
+                  textAlign: 'left',
+                  borderRadius: '4px',
+                }}
+              >
+                <p style={{ margin: '0 0 6px 0', fontSize: '1rem' }}>
+                  <strong>Date:</strong> Friday, August 13th, 2027
+                </p>
+                <p style={{ margin: '0 0 6px 0', fontSize: '1rem' }}>
+                  <strong>Venue:</strong> Conyngham Arms Hotel, Slane, Co. Meath
+                </p>
+                <p style={{ margin: 0, fontSize: '1rem' }}>
+                  <strong>Ceremony:</strong> 1:30 PM Sharp
+                </p>
               </div>
 
-              <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', fontSize: '0.9rem' }}>
-                We are overjoyed to celebrate our wedding day surrounded by our favorite people. 
+              <p
+                style={{
+                  lineHeight: '1.6',
+                  color: '#555',
+                  marginBottom: '20px',
+                  fontSize: '0.9rem',
+                }}
+              >
+                We are overjoyed to celebrate our wedding day surrounded by our favorite people.
                 Explore our itinerary, travel guides, and let us know if you can make it!
               </p>
 
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
+              <div
+                style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}
+              >
                 <Link
                   to="/rsvp"
                   style={{
@@ -250,7 +305,6 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-
           </div>
         )}
       </div>

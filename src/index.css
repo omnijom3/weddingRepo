@@ -1,4 +1,6 @@
-html, body, #root {
+html,
+body,
+#root {
   width: 100%;
   min-height: 100vh;
   margin: 0;
@@ -14,7 +16,7 @@ html, body, #root {
   --color-sage: #7a8b79;
   --color-gold: #c9a050;
   --color-border: #e8e2d5;
-  --font-serif: Georgia, "Times New Roman", serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
   --shadow-soft: 0 2px 5px rgba(0, 0, 0, 0.05);
   --shadow-rose: 0 4px 12px rgba(184, 125, 116, 0.3);
 }
@@ -23,7 +25,10 @@ body {
   margin: 0;
   background-color: var(--bg-cream);
   color: var(--text-main);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

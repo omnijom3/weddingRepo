@@ -45,7 +45,8 @@ export default function RSVP() {
           <div style={{ fontSize: '3rem', marginBottom: '15px' }}>🌸</div>
           <h2 className="page-title">Thank You, {fullName}!</h2>
           <p>
-            Your RSVP has been successfully received. We can&apos;t wait to celebrate with you at {wedding.venue}!
+            Your RSVP has been successfully received. We can&apos;t wait to celebrate with you at{' '}
+            {wedding.venue}!
           </p>
         </div>
       ) : (
@@ -53,7 +54,9 @@ export default function RSVP() {
           {errorMessage && <div className="form-error">{errorMessage}</div>}
 
           <div className="form-field">
-            <label htmlFor="rsvp-name" className="form-label">Full Name(s) *</label>
+            <label htmlFor="rsvp-name" className="form-label">
+              Full Name(s) *
+            </label>
             <input
               id="rsvp-name"
               type="text"
@@ -94,7 +97,9 @@ export default function RSVP() {
           {attending === 'yes' && (
             <>
               <div className="form-field">
-                <label htmlFor="rsvp-meal" className="form-label">Meal Selection *</label>
+                <label htmlFor="rsvp-meal" className="form-label">
+                  Meal Selection *
+                </label>
                 <select
                   id="rsvp-meal"
                   value={mealChoice}
@@ -110,7 +115,9 @@ export default function RSVP() {
               </div>
 
               <div className="form-field">
-                <label htmlFor="rsvp-dietary" className="form-label">Dietary Requirements or Allergies</label>
+                <label htmlFor="rsvp-dietary" className="form-label">
+                  Dietary Requirements or Allergies
+                </label>
                 <textarea
                   id="rsvp-dietary"
                   rows={3}

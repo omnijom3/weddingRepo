@@ -4,10 +4,7 @@ import { scheduleEvents, wedding } from '../data/wedding';
 export default function Schedule() {
   return (
     <div className="page">
-      <PageHeader
-        title="Wedding Day Schedule"
-        subtitle={`${wedding.date} • ${wedding.venue}`}
-      />
+      <PageHeader title="Wedding Day Schedule" subtitle={`${wedding.date} • ${wedding.venue}`} />
 
       <div className="timeline">
         {scheduleEvents.map((event) => (
