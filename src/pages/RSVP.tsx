@@ -1,32 +1,108 @@
-import { useState, FormEvent } from 'react';
-import { client } from '../lib/amplifyClient';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import PageHeader from '../components/PageHeader';
+import PhotoAnimation from '../components/PhotoAnimation';
+import type { PhotoVariant } from '../data/animations';
 import { mealOptions, wedding } from '../data/wedding';
+import {
+  findHousehold,
+  rememberedHouseholdCode,
+  rememberHouseholdCode,
+  saveRsvps,
+  type Household,
+  type RsvpAnswer,
+  type Side,
+} from '../lib/households';
+
+type GuestForm = RsvpAnswer;
+
+function toForm(household: Household): GuestForm[] {
+  return household.guests.map((guest) => ({
+    guestId: guest.id,
+    guestName: guest.name,
+    attending: true,
+    mealChoice: mealOptions[0].value,
+    dietaryNotes: '',
+  }));
+}
 
 export default function RSVP() {
-  const [fullName, setFullName] = useState('');
-  const [attending, setAttending] = useState<'yes' | 'no'>('yes');
-  const [mealChoice, setMealChoice] = useState<string>(mealOptions[0].value);
-  const [dietaryNotes, setDietaryNotes] = useState('');
+  const [household, setHousehold] = useState<Household | null>(null);
+  const [codeInput, setCodeInput] = useState('');
+  const [codeError, setCodeError] = useState('');
+  const [guests, setGuests] = useState<GuestForm[]>([]);
+  const [side, setSide] = useState<Side>('both');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [photo, setPhoto] = useState<{ id: number; variant: PhotoVariant } | null>(null);
+  const triggerPhoto = (variant: PhotoVariant) => setPhoto({ id: Date.now(), variant });
+  const clearPhoto = useCallback(() => setPhoto(null), []);
+
+  useEffect(() => {
+    const remembered = rememberedHouseholdCode();
+    if (!remembered) return;
+
+    let active = true;
+    findHousehold(remembered)
+      .then((found) => {
+        if (!active || !found) return;
+        setHousehold(found);
+        setGuests(toForm(found));
+        setSide(found.side ?? 'both');
+      })
+      .catch((err: unknown) => console.error('Error loading household:', err));
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleCodeSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setCodeError('');
+
+    const code = codeInput.trim().toLowerCase();
+    try {
+      const found = await findHousehold(code);
+      if (!found) {
+        setCodeError('We could not find that invite code. Please check it and try again.');
+        return;
+      }
+      rememberHouseholdCode(found.householdCode);
+      setHousehold(found);
+      setGuests(toForm(found));
+      setSide(found.side ?? 'both');
+    } catch (err: unknown) {
+      console.error('Error looking up invite code:', err);
+      setCodeError('Something went wrong. Please try again.');
+    }
+  };
+
+  const updateGuest = (guestId: string, changes: Partial<GuestForm>) => {
+    setGuests((current) =>
+      current.map((guest) => (guest.guestId === guestId ? { ...guest, ...changes } : guest)),
+    );
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!household) return;
+
     setIsSubmitting(true);
     setErrorMessage('');
 
-    try {
-      await client.models.RSVP.create({
-        fullName,
-        attending: attending === 'yes',
-        mealChoice: attending === 'yes' ? mealChoice : 'N/A',
-        dietaryNotes: dietaryNotes.trim() || 'None',
-      });
+    const answers = guests.map((guest) => ({
+      ...guest,
+      mealChoice: guest.attending ? guest.mealChoice : 'N/A',
+      dietaryNotes: guest.attending ? guest.dietaryNotes.trim() || 'None' : 'None',
+    }));
 
+    try {
+      await saveRsvps(household.householdCode, side, answers);
       setIsSubmitted(true);
+      triggerPhoto(side);
     } catch (err: unknown) {
       console.error('Error submitting RSVP:', err);
       setErrorMessage('Something went wrong submitting your RSVP. Please try again.');
@@ -35,15 +111,43 @@ export default function RSVP() {
     }
   };
 
+  if (!household) {
+    return (
+      <div className="card rsvp-card">
+        <PageHeader title="RSVP" />
+        <p className="rsvp-deadline">Please enter the invite code from your invitation.</p>
+        <form onSubmit={handleCodeSubmit} className="form-stack">
+          {codeError && <div className="form-error">{codeError}</div>}
+          <div className="form-field">
+            <label htmlFor="invite-code" className="form-label">
+              Invite code *
+            </label>
+            <input
+              id="invite-code"
+              type="text"
+              required
+              value={codeInput}
+              onChange={(e) => setCodeInput(e.target.value)}
+              className="form-input"
+            />
+          </div>
+          <button type="submit" className="btn btn-primary">
+            Continue
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="card rsvp-card">
+      {photo && <PhotoAnimation key={photo.id} variant={photo.variant} onDone={clearPhoto} />}
       <PageHeader title="RSVP" />
       <p className="rsvp-deadline">Please respond by {wedding.rsvpDeadline}</p>
 
       {isSubmitted ? (
         <div className="rsvp-success">
-          <div style={{ fontSize: '3rem', marginBottom: '15px' }}>🌸</div>
-          <h2 className="page-title">Thank You, {fullName}!</h2>
+          <h2 className="page-title">Thank You, {household.greetingName}!</h2>
           <p>
             Your RSVP has been successfully received. We can&apos;t wait to celebrate with you at{' '}
             {wedding.venue}!
@@ -53,82 +157,93 @@ export default function RSVP() {
         <form onSubmit={handleSubmit} className="form-stack">
           {errorMessage && <div className="form-error">{errorMessage}</div>}
 
-          <div className="form-field">
-            <label htmlFor="rsvp-name" className="form-label">
-              Full Name(s) *
-            </label>
-            <input
-              id="rsvp-name"
-              type="text"
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="e.g. John & Sarah Smith"
-              className="form-input"
-            />
-          </div>
-
           <fieldset className="form-field">
-            <legend className="form-label">Will you be attending? *</legend>
+            <legend className="form-label">Whose guest are you? *</legend>
             <div className="radio-group">
-              <label className="radio-option">
-                <input
-                  type="radio"
-                  name="attending"
-                  value="yes"
-                  checked={attending === 'yes'}
-                  onChange={() => setAttending('yes')}
-                />
-                Joyfully Accepts
-              </label>
-              <label className="radio-option">
-                <input
-                  type="radio"
-                  name="attending"
-                  value="no"
-                  checked={attending === 'no'}
-                  onChange={() => setAttending('no')}
-                />
-                Regretfully Declines
-              </label>
+              {(
+                [
+                  ['rosie', "Rosie's"],
+                  ['joe', "Joe's"],
+                  ['both', 'Both'],
+                ] as const
+              ).map(([value, label]) => (
+                <label key={value} className="radio-option">
+                  <input
+                    type="radio"
+                    name="side"
+                    value={value}
+                    checked={side === value}
+                    onChange={() => {
+                      setSide(value);
+                      triggerPhoto(value);
+                    }}
+                  />
+                  {label}
+                </label>
+              ))}
             </div>
           </fieldset>
 
-          {attending === 'yes' && (
-            <>
-              <div className="form-field">
-                <label htmlFor="rsvp-meal" className="form-label">
-                  Meal Selection *
+          {guests.map((guest) => (
+            <fieldset key={guest.guestId} className="form-field">
+              <legend className="form-label">{guest.guestName}</legend>
+
+              <div className="radio-group">
+                <label className="radio-option">
+                  <input
+                    type="radio"
+                    name={`attending-${guest.guestId}`}
+                    checked={guest.attending}
+                    onChange={() => updateGuest(guest.guestId, { attending: true })}
+                  />
+                  Joyfully Accepts
                 </label>
-                <select
-                  id="rsvp-meal"
-                  value={mealChoice}
-                  onChange={(e) => setMealChoice(e.target.value)}
-                  className="form-input"
-                >
-                  {mealOptions.map((meal) => (
-                    <option key={meal.value} value={meal.value}>
-                      {meal.label}
-                    </option>
-                  ))}
-                </select>
+                <label className="radio-option">
+                  <input
+                    type="radio"
+                    name={`attending-${guest.guestId}`}
+                    checked={!guest.attending}
+                    onChange={() => updateGuest(guest.guestId, { attending: false })}
+                  />
+                  Regretfully Declines
+                </label>
               </div>
 
-              <div className="form-field">
-                <label htmlFor="rsvp-dietary" className="form-label">
-                  Dietary Requirements or Allergies
-                </label>
-                <textarea
-                  id="rsvp-dietary"
-                  rows={3}
-                  value={dietaryNotes}
-                  onChange={(e) => setDietaryNotes(e.target.value)}
-                  placeholder="Please specify any allergies, gluten-free, dairy-free requirements..."
-                  className="form-input"
-                />
-              </div>
-            </>
-          )}
+              {guest.attending && (
+                <>
+                  <label htmlFor={`meal-${guest.guestId}`} className="form-label">
+                    Meal Selection *
+                  </label>
+                  <select
+                    id={`meal-${guest.guestId}`}
+                    value={guest.mealChoice}
+                    onChange={(e) => {
+                      updateGuest(guest.guestId, { mealChoice: e.target.value });
+                      triggerPhoto(side);
+                    }}
+                    className="form-input"
+                  >
+                    {mealOptions.map((meal) => (
+                      <option key={meal.value} value={meal.value}>
+                        {meal.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <label htmlFor={`dietary-${guest.guestId}`} className="form-label">
+                    Dietary Requirements or Allergies
+                  </label>
+                  <textarea
+                    id={`dietary-${guest.guestId}`}
+                    rows={2}
+                    value={guest.dietaryNotes}
+                    onChange={(e) => updateGuest(guest.guestId, { dietaryNotes: e.target.value })}
+                    className="form-input"
+                  />
+                </>
+              )}
+            </fieldset>
+          ))}
 
           <button
             type="submit"

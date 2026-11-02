@@ -1,0 +1,33 @@
+.floral-border {
+  position: fixed;
+  inset: 0;
+  background: var(--frame) center / contain no-repeat;
+  opacity: 0.7;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+@media (max-width: 700px) {
+  .floral-border {
+    background: none;
+  }
+
+  .floral-border::before,
+  .floral-border::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--frame) center / 100% 100% no-repeat;
+  }
+
+  .floral-border::before {
+    top: 0;
+  }
+
+  .floral-border::after {
+    bottom: 0;
+  }
+}

@@ -1,0 +1,76 @@
+.photo-animation {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.photo-animation-img {
+  width: min(70vw, 360px);
+  height: auto;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.2));
+  border-radius: 12px;
+  animation: photoFromLeft 3.2s ease-out both;
+}
+
+.photo-animation--joe {
+  justify-content: flex-end;
+}
+
+.photo-animation--joe .photo-animation-img {
+  animation-name: photoFromRight;
+}
+
+.photo-animation--both {
+  justify-content: center;
+}
+
+.photo-animation--both .photo-animation-img {
+  animation-name: photoFadeIn;
+}
+
+.photo-animation--reduced .photo-animation-img {
+  animation: photoFadeIn 0.4s ease-out both;
+}
+
+@keyframes photoFromLeft {
+  0% {
+    transform: translateX(-110vw);
+  }
+  30%,
+  70% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(110vw);
+  }
+}
+
+@keyframes photoFromRight {
+  0% {
+    transform: translateX(110vw);
+  }
+  30%,
+  70% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-110vw);
+  }
+}
+
+@keyframes photoFadeIn {
+  0% {
+    opacity: 0;
+  }
+  30%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

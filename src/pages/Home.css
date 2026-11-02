@@ -2,24 +2,6 @@
   position: relative;
   width: 100%;
   max-width: 550px;
-  height: 350px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-@keyframes openFlapSlow {
-  0% {
-    transform: rotateX(0deg);
-  }
-  100% {
-    transform: rotateX(180deg);
-  }
-}
-
-.flap-opening-slow {
-  transform-origin: top center;
-  animation: openFlapSlow 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes slideOutCardSmooth {
@@ -37,53 +19,298 @@
   }
 }
 
+.invite-card {
+  background-color: var(--bg-cream);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 35px 30px;
+  text-align: center;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+  position: absolute;
+  top: -15px;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.invite-title {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  color: var(--text-main);
+  margin: 0 0 4px;
+}
+
+.invite-subtitle {
+  font-size: 0.95rem;
+  color: var(--color-sage);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+}
+
+.invite-greeting {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  color: var(--text-main);
+  margin: 0 0 16px;
+}
+
+.invite-details {
+  background-color: #ffffff;
+  border-left: 3px solid var(--color-gold);
+  padding: 15px;
+  margin: 20px 0;
+  text-align: left;
+  border-radius: 4px;
+}
+
+.invite-details p {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.invite-details p:last-child {
+  margin-bottom: 0;
+}
+
+.invite-body {
+  line-height: 1.6;
+  color: var(--text-body);
+  margin: 0 0 20px;
+  font-size: 0.9rem;
+}
+
+.invite-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
 .card-sliding-smooth {
   animation: slideOutCardSmooth 1.6s 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;
 }
 
-@keyframes envelopeFadeOut {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    pointer-events: none;
-  }
+.petal-shower {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 100;
 }
 
-.envelope-fading-smooth {
-  animation: envelopeFadeOut 0.8s 0.9s forwards ease-out;
-}
-
-@keyframes floatDown {
+@keyframes petalFall {
   0% {
-    transform: translateY(-10vh) rotate(0deg);
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
     opacity: 1;
+  }
+  25% {
+    transform: translate3d(calc(var(--sway) * 0.5), 25vh, 0) rotate(calc(var(--spin) * 0.25));
+  }
+  50% {
+    transform: translate3d(calc(var(--sway) * -0.5), 50vh, 0) rotate(calc(var(--spin) * 0.5));
   }
   80% {
-    opacity: 0.8;
+    opacity: 0.85;
   }
   100% {
-    transform: translateY(85vh) rotate(360deg);
+    transform: translate3d(var(--sway), 105vh, 0) rotate(var(--spin));
     opacity: 0;
   }
 }
 
-.falling-petal {
+.petal {
   position: absolute;
-  top: -20px;
+  top: 0;
+  animation-name: petalFall;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-iteration-count: 1;
+  will-change: transform;
+}
+
+.envelope {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  perspective: 1200px;
+}
+
+.envelope-body,
+.envelope-flap {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  border: 2px solid var(--envelope-border);
+  box-sizing: border-box;
+  border-radius: 12px;
+  background-color: var(--envelope-body);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.envelope-body {
+  top: 0;
+  height: 300px;
+  overflow: hidden;
+}
+
+.envelope-pocket {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 160px;
+  background-color: var(--envelope-pocket);
+  border-top: 2px solid var(--envelope-border);
+  border-radius: 0 0 12px 12px;
+  box-sizing: border-box;
+}
+
+.envelope-ribbon {
+  position: absolute;
+  background-color: var(--color-rose);
+  opacity: 0.9;
+  transition: opacity 0.6s ease;
+}
+
+.envelope-ribbon--vertical {
+  top: 0;
+  left: 50%;
+  width: 14px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.envelope-ribbon--horizontal {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 14px;
+  transform: translateY(-50%);
+}
+
+.envelope-flap {
+  top: 0;
+  height: 150px;
+  background-color: var(--envelope-flap);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  border-radius: 12px 12px 0 0;
+  transform-origin: top center;
+  transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 3;
+}
+
+.envelope--open .envelope-flap {
+  transform: rotateX(180deg);
+}
+
+.envelope--open .envelope-ribbon {
+  opacity: 0;
+}
+
+.envelope-bow-button {
+  position: absolute;
+  top: 118px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 80px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 5;
+  transition:
+    transform 0.6s ease,
+    opacity 0.5s ease;
+}
+
+.envelope-bow-button:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+
+.envelope--open .envelope-bow-button {
+  transform: translate(-50%, -60px) rotate(-18deg);
+  opacity: 0;
   pointer-events: none;
-  z-index: 50;
-  animation: floatDown 5s ease-out forwards;
+}
+
+.envelope-bow {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 6px 10px rgba(163, 90, 82, 0.35));
+}
+
+.envelope-hint {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 6;
+  pointer-events: none;
+  animation: hintFadeIn 0.6s ease-out both;
+}
+
+.envelope-hint-pill {
+  padding: 6px 14px;
+  border: 1px solid var(--envelope-border);
+  border-radius: 999px;
+  background-color: var(--bg-cream);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-size: 0.9rem;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.envelope-hint-arrow {
+  width: 24px;
+  height: 70px;
+  animation: hintBob 1.6s ease-in-out infinite;
+}
+
+@keyframes hintFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hintBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .falling-petal,
-  .flap-opening-slow,
-  .card-sliding-smooth,
-  .envelope-fading-smooth {
+  .petal {
     animation-duration: 0.01ms;
     animation-delay: 0ms;
+  }
+
+  .card-sliding-smooth,
+  .envelope-hint-arrow {
+    animation: none;
+  }
+
+  .card-sliding-smooth {
+    opacity: 1;
+  }
+
+  .envelope-flap,
+  .envelope-bow-button,
+  .envelope-ribbon {
+    transition-duration: 0.01ms;
   }
 }

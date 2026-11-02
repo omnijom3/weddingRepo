@@ -3,22 +3,29 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 const schema = a.schema({
   Household: a
     .model({
-      householdCode: a.string().required(), // Primary Key (e.g. ROSIE-JOE-401)
-      familyName: a.string().required(),   // e.g. "The Smith Family"
-      guests: a.json().array(),             // Array of guest objects
-      rsvpSubmitted: a.boolean().default(false),
+      householdCode: a.string().required(),
+      greetingName: a.string().required(),
+      side: a.enum(['rosie', 'joe', 'both']),
+      guests: a.json().array().required(),
       notes: a.string(),
     })
     .identifier(['householdCode'])
-    .authorization((allow) => [allow.publicApiKey()]), // Allows guests to read/write using code
+    .authorization((allow) => [allow.guest().to(['get']), allow.authenticated('userPools')]),
   RSVP: a
     .model({
-      fullName: a.string().required(),
+      householdCode: a.string().required(),
+      guestId: a.string().required(),
+      guestName: a.string().required(),
+      side: a.enum(['rosie', 'joe', 'both']),
       attending: a.boolean().required(),
       mealChoice: a.string().required(),
       dietaryNotes: a.string(),
     })
-    .authorization((allow) => [allow.publicApiKey()]),
+    .identifier(['householdCode', 'guestId'])
+    .authorization((allow) => [
+      allow.guest().to(['create', 'update', 'get']),
+      allow.authenticated('userPools'),
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -26,7 +33,6 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'apiKey',
-    apiKeyAuthorizationMode: { expiresInDays: 30 },
+    defaultAuthorizationMode: 'identityPool',
   },
 });

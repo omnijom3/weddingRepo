@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import FloralBorder from './FloralBorder';
 
 const navItems = [
   { to: '/', label: 'Home', end: true },
@@ -12,6 +13,7 @@ const navItems = [
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="site">
+      <FloralBorder />
       <nav className="site-nav">
         <div className="site-nav-inner">
           <Link to="/" className="site-brand">
@@ -32,6 +34,15 @@ export default function Layout({ children }: { children: ReactNode }) {
         </div>
       </nav>
       <main className="site-main">{children}</main>
+      <footer className="site-footer">
+        <a
+          href="https://www.vecteezy.com/free-png/floral-border-png"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Floral Border Png PNGs by Vecteezy
+        </a>
+      </footer>
     </div>
   );
 }

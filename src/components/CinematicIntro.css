@@ -1,0 +1,64 @@
+.cinematic-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background-color: #000;
+}
+
+.cinematic-intro--fading {
+  animation: introFadeOut 1.2s ease forwards;
+  pointer-events: none;
+}
+
+.cinematic-intro-line {
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 6vw, 3rem);
+  letter-spacing: 1px;
+  text-align: center;
+  animation: introLine 2.2s ease-in-out both;
+}
+
+.cinematic-intro-skip {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+@keyframes introLine {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  20%,
+  75% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes introFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
