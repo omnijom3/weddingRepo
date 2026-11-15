@@ -147,3 +147,6 @@ vite.config.ts.timestamp-*
 amplify_outputs*
 amplifyconfiguration*
 sample/
+# invite generator (real guest names and printed codes)
+guests.csv
+invites/

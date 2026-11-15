@@ -5,7 +5,7 @@ import FloralBorder from './FloralBorder';
 const navItems = [
   { to: '/', label: 'Home', end: true },
   { to: '/schedule', label: 'Schedule' },
-  { to: '/rsvp', label: 'RSVP', accent: true },
+  { to: '/rsvp', label: 'RSVP' },
   { to: '/travel', label: 'Travel' },
   { to: '/faq', label: 'FAQ' },
 ];
@@ -25,7 +25,9 @@ export default function Layout({ children }: { children: ReactNode }) {
                 key={item.to}
                 to={item.to}
                 end={item.end}
-                className={item.accent ? 'site-link site-link--accent' : 'site-link'}
+                className={({ isActive }) =>
+                  isActive ? 'site-link site-link--active' : 'site-link'
+                }
               >
                 {item.label}
               </NavLink>

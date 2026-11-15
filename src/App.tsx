@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { Route, Routes, BrowserRouter as Router } from 'react-router-dom';
 import Layout from './components/Layout';
+import NotificationSignupForm from './components/NotificationSignupForm';
+import { RSVP_ENABLED } from './lib/featureFlags';
 import Home from './pages/Home';
 
 const Schedule = lazy(() => import('./pages/Schedule'));
@@ -8,6 +10,7 @@ const RSVP = lazy(() => import('./pages/RSVP'));
 const Travel = lazy(() => import('./pages/Travel'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const Invite = lazy(() => import('./pages/Invite'));
+const Admin = lazy(() => import('./pages/Admin'));
 
 export default function App() {
   return (
@@ -17,10 +20,11 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/schedule" element={<Schedule />} />
-            <Route path="/rsvp" element={<RSVP />} />
+            <Route path="/rsvp" element={RSVP_ENABLED ? <RSVP /> : <NotificationSignupForm />} />
             <Route path="/travel" element={<Travel />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/i/:code" element={<Invite />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
         </Suspense>
       </Layout>

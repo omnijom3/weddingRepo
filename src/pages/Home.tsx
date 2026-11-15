@@ -2,10 +2,16 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Envelope from '../components/Envelope';
 import PetalShower from '../components/PetalShower';
-import type { Household } from '../lib/households';
+import { recordProgress, type Household } from '../lib/households';
 import './Home.css';
 
-function InvitationCard({ household }: { household?: Household }) {
+function InvitationCard({
+  household,
+  onReplayIntro,
+}: {
+  household?: Household;
+  onReplayIntro?: () => void;
+}) {
   return (
     <div className="invite-card card-sliding-smooth">
       <h1 className="invite-title">Rosie & Joe</h1>
@@ -37,12 +43,23 @@ function InvitationCard({ household }: { household?: Household }) {
         <Link to="/schedule" className="btn btn-outline">
           View Schedule
         </Link>
+        {onReplayIntro && (
+          <button type="button" className="btn btn-outline" onClick={onReplayIntro}>
+            Replay intro
+          </button>
+        )}
       </div>
     </div>
   );
 }
 
-export default function Home({ household }: { household?: Household }) {
+export default function Home({
+  household,
+  onReplayIntro,
+}: {
+  household?: Household;
+  onReplayIntro?: () => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -60,8 +77,14 @@ export default function Home({ household }: { household?: Household }) {
       {isOpen && <PetalShower />}
 
       <div className="envelope-scene">
-        <Envelope isOpen={isOpen} onOpen={() => setIsOpen(true)}>
-          {isOpen && <InvitationCard household={household} />}
+        <Envelope
+          isOpen={isOpen}
+          onOpen={() => {
+            setIsOpen(true);
+            if (household) void recordProgress(household.householdCode, 'envelope-opened');
+          }}
+        >
+          {isOpen && <InvitationCard household={household} onReplayIntro={onReplayIntro} />}
         </Envelope>
       </div>
     </div>
