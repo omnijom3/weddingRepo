@@ -7,6 +7,7 @@ const schema = a.schema({
       greetingName: a.string().required(),
       side: a.enum(['rosie', 'joe', 'both']),
       guests: a.json().array().required(),
+      plusOneAllowed: a.boolean(),
       notes: a.string(),
     })
     .identifier(['householdCode'])
@@ -39,6 +40,17 @@ const schema = a.schema({
     .identifier(['householdCode', 'step'])
     .authorization((allow) => [
       allow.guest().to(['create', 'get']),
+      allow.groups(['admins']).to(['read']),
+    ]),
+  NotificationSignup: a
+    .model({
+      householdCode: a.string().required(),
+      email: a.string(),
+      phone: a.string(),
+      createdAt: a.string().required(),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['create']),
       allow.groups(['admins']).to(['read']),
     ]),
 });

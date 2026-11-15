@@ -15,7 +15,13 @@ export type GuestRow = {
   greetingName: string;
   side: Side;
   guests: string[];
+  plusOneAllowed: boolean;
 };
+
+export function isPlusOneAllowed(cell: string | undefined): boolean {
+  const value = (cell ?? '').trim().toLowerCase();
+  return value !== '' && value !== 'false';
+}
 
 export type Invite = GuestRow & { householdCode: string };
 
@@ -39,6 +45,9 @@ export function parseGuestsCsv(text: string): GuestRow[] {
   const greetingAt = column('greeting_name');
   const sideAt = column('side');
   const guestsAt = column('guests');
+  const plusOneAt = columns.findIndex(
+    (column) => column === 'has_plus_one' || column === 'has plus one',
+  );
 
   return lines.map((line, row) => {
     const cells = line.split(',').map((cell) => cell.trim());
@@ -48,7 +57,7 @@ export function parseGuestsCsv(text: string): GuestRow[] {
     const side = cells[sideAt];
     const guests = (cells[guestsAt] ?? '')
       .split(';')
-      .map((name) => name.trim())
+      .map((name) => name.replace(/\s+/g, ' ').trim())
       .filter(Boolean);
 
     if (!householdId) throw new Error(`${where}: household_id is required`);
@@ -58,7 +67,9 @@ export function parseGuestsCsv(text: string): GuestRow[] {
     }
     if (guests.length === 0) throw new Error(`${where}: at least one guest is required`);
 
-    return { householdId, greetingName, side: side as Side, guests };
+    const plusOneAllowed = plusOneAt !== -1 && isPlusOneAllowed(cells[plusOneAt]);
+
+    return { householdId, greetingName, side: side as Side, guests, plusOneAllowed };
   });
 }
 

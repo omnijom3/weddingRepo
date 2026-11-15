@@ -4,6 +4,7 @@ import PhotoAnimation from '../components/PhotoAnimation';
 import type { PhotoVariant } from '../data/animations';
 import { mealOptions, wedding } from '../data/wedding';
 import {
+  addPlusOneToHousehold,
   findHousehold,
   rememberedHouseholdCode,
   rememberHouseholdCode,
@@ -32,6 +33,11 @@ export default function RSVP() {
   const [codeError, setCodeError] = useState('');
   const [guests, setGuests] = useState<GuestForm[]>([]);
   const [side, setSide] = useState<Side>('both');
+  const [plusOne, setPlusOne] = useState<{ bringing: boolean; name: string; mealChoice: string }>({
+    bringing: false,
+    name: '',
+    mealChoice: mealOptions[0].value,
+  });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -94,13 +100,40 @@ export default function RSVP() {
     setIsSubmitting(true);
     setErrorMessage('');
 
-    const answers = guests.map((guest) => ({
+    const includePlusOne = household.plusOneAllowed && plusOne.bringing;
+    if (includePlusOne && !plusOne.name.trim()) {
+      setErrorMessage("Please enter your plus one's name, or untick the plus one option.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const formAnswers = guests.map((guest) => ({
       ...guest,
       mealChoice: guest.attending ? guest.mealChoice : 'N/A',
       dietaryNotes: guest.attending ? guest.dietaryNotes.trim() || 'None' : 'None',
     }));
+    const answers = includePlusOne
+      ? [
+          ...formAnswers,
+          {
+            guestId: `${household.householdCode}-plus-one`,
+            guestName: plusOne.name.trim(),
+            attending: true,
+            mealChoice: plusOne.mealChoice,
+            dietaryNotes: 'None',
+          },
+        ]
+      : formAnswers;
 
     try {
+      if (includePlusOne) {
+        const guestsWithPlusOne = await addPlusOneToHousehold(
+          household.householdCode,
+          household.guests,
+          plusOne.name.trim(),
+        );
+        setHousehold({ ...household, guests: guestsWithPlusOne });
+      }
       await saveRsvps(household.householdCode, side, answers);
       void recordProgress(household.householdCode, 'rsvp-submitted');
       setIsSubmitted(true);
@@ -243,6 +276,67 @@ export default function RSVP() {
               )}
             </fieldset>
           ))}
+
+          {household.plusOneAllowed && (
+            <fieldset className="form-field">
+              <legend className="form-label">Plus one</legend>
+              <div className="radio-group">
+                <label className="radio-option">
+                  <input
+                    type="radio"
+                    name="plus-one-bringing"
+                    checked={!plusOne.bringing}
+                    onChange={() => setPlusOne((current) => ({ ...current, bringing: false }))}
+                  />
+                  Not bringing a plus one
+                </label>
+                <label className="radio-option">
+                  <input
+                    type="radio"
+                    name="plus-one-bringing"
+                    checked={plusOne.bringing}
+                    onChange={() => setPlusOne((current) => ({ ...current, bringing: true }))}
+                  />
+                  Bringing a plus one
+                </label>
+              </div>
+
+              {plusOne.bringing && (
+                <>
+                  <label htmlFor="plus-one-name" className="form-label">
+                    Plus one&apos;s full name *
+                  </label>
+                  <input
+                    id="plus-one-name"
+                    type="text"
+                    value={plusOne.name}
+                    onChange={(e) =>
+                      setPlusOne((current) => ({ ...current, name: e.target.value }))
+                    }
+                    className="form-input"
+                  />
+
+                  <label htmlFor="plus-one-meal" className="form-label">
+                    Meal Selection *
+                  </label>
+                  <select
+                    id="plus-one-meal"
+                    value={plusOne.mealChoice}
+                    onChange={(e) =>
+                      setPlusOne((current) => ({ ...current, mealChoice: e.target.value }))
+                    }
+                    className="form-input"
+                  >
+                    {mealOptions.map((meal) => (
+                      <option key={meal.value} value={meal.value}>
+                        {meal.label}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
+            </fieldset>
+          )}
 
           <button
             type="submit"

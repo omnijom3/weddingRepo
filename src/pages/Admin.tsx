@@ -4,9 +4,11 @@ import PageHeader from '../components/PageHeader';
 import { PROGRESS_STEPS } from '../data/progress';
 import {
   householdsCsv,
+  notificationsCsv,
   rsvpsCsv,
   summariseHouseholds,
   type AdminHousehold,
+  type AdminNotification,
   type AdminProgress,
   type AdminRsvp,
 } from '../lib/admin';
@@ -16,6 +18,7 @@ type Data = {
   households: AdminHousehold[];
   rsvps: AdminRsvp[];
   progress: AdminProgress[];
+  notifications: AdminNotification[];
 };
 
 async function listAll<T>(
@@ -37,10 +40,11 @@ async function listAll<T>(
 }
 
 async function fetchAll(): Promise<Data> {
-  const [households, rsvps, progress] = await Promise.all([
+  const [households, rsvps, progress, notifications] = await Promise.all([
     listAll((options) => client.models.Household.list(options)),
     listAll((options) => client.models.RSVP.list(options)),
     listAll((options) => client.models.Progress.list(options)),
+    listAll((options) => client.models.NotificationSignup.list(options)),
   ]);
   return {
     households: households.map((h) => ({
@@ -61,6 +65,12 @@ async function fetchAll(): Promise<Data> {
       householdCode: p.householdCode,
       step: p.step,
       completedAt: p.completedAt,
+    })),
+    notifications: notifications.map((n) => ({
+      householdCode: n.householdCode,
+      email: n.email ?? null,
+      phone: n.phone ?? null,
+      createdAt: n.createdAt,
     })),
   };
 }
@@ -186,6 +196,11 @@ export default function Admin() {
     download('rsvps.csv', rsvpsCsv(data.households, data.rsvps));
   };
 
+  const exportNotifications = () => {
+    if (!data) return;
+    download('notifications.csv', notificationsCsv(data.notifications));
+  };
+
   const refresh = async () => {
     setLoadError('');
     try {
@@ -210,6 +225,9 @@ export default function Admin() {
         </button>
         <button type="button" className="btn btn-outline" onClick={exportRsvps}>
           Export RSVPs CSV
+        </button>
+        <button type="button" className="btn btn-outline" onClick={exportNotifications}>
+          Export notifications CSV
         </button>
         <button type="button" className="btn btn-outline" onClick={handleSignOut}>
           Sign out

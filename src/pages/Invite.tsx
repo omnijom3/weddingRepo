@@ -57,6 +57,8 @@ export default function Invite() {
     void recordProgress(code, 'intro-complete');
   }, [code]);
 
+  const replayIntro = useCallback(() => setIntroDone(false), []);
+
   useEffect(() => {
     const replayForDemo = import.meta.env.DEV && code === 'demo';
     if ((!replayForDemo && sessionStorage.getItem(introSeenKey(code))) || prefersReducedMotion()) {
@@ -72,7 +74,7 @@ export default function Invite() {
         {!introDone && (
           <CinematicIntro lines={introLines(state.household.greetingName)} onDone={markIntroDone} />
         )}
-        <Home household={state.household} />
+        <Home household={state.household} onReplayIntro={replayIntro} />
       </>
     );
   }

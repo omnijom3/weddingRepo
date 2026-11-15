@@ -39,6 +39,7 @@ async function main() {
       greetingName: row.greetingName,
       side: row.side,
       guests: toGuests(row),
+      plusOneAllowed: row.plusOneAllowed,
     };
     const authMode = 'userPool' as const;
     const existing = await client.models.Household.get({ householdCode }, { authMode });

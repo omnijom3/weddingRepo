@@ -150,6 +150,22 @@ describe('RSVP form', () => {
     expect(container.querySelector('.photo-animation--both')).not.toBeInTheDocument();
   });
 
+  it('asks for a plus one name before submitting when a plus one is chosen', async () => {
+    householdGet.mockResolvedValue({
+      data: { ...household, plusOneAllowed: true },
+      errors: undefined,
+    });
+    const user = userEvent.setup();
+    renderRSVP();
+
+    await enterCode(user);
+    await user.click(screen.getByLabelText('Bringing a plus one'));
+    await user.click(screen.getByRole('button', { name: /send rsvp/i }));
+
+    expect(await screen.findByText(/enter your plus one's name/i)).toBeInTheDocument();
+    expect(rsvpCreate).not.toHaveBeenCalled();
+  });
+
   it('shows an error banner when the request fails', async () => {
     rsvpCreate.mockRejectedValue(new Error('network'));
     const user = userEvent.setup();

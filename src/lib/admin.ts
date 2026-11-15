@@ -105,6 +105,24 @@ export function householdsCsv(summaries: HouseholdSummary[]): string {
   return toCsv(headers, rows);
 }
 
+export type AdminNotification = {
+  householdCode: string;
+  email: string | null;
+  phone: string | null;
+  createdAt: string;
+};
+
+export function notificationsCsv(notifications: AdminNotification[]): string {
+  const headers = ['household_code', 'email', 'phone', 'created_at'];
+  const rows = notifications.map((n) => [
+    n.householdCode,
+    n.email ?? '',
+    n.phone ?? '',
+    n.createdAt,
+  ]);
+  return toCsv(headers, rows);
+}
+
 export function rsvpsCsv(households: AdminHousehold[], rsvps: AdminRsvp[]): string {
   const headers = [
     'household_code',

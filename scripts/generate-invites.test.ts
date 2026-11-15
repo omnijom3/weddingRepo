@@ -13,8 +13,36 @@ describe('parseGuestsCsv', () => {
         greetingName: 'The Smith Family',
         side: 'both',
         guests: ['Anna Smith', 'Ben Smith'],
+        plusOneAllowed: false,
       },
     ]);
+  });
+
+  it('tidies stray whitespace around and inside guest names', () => {
+    const rows = parseGuestsCsv(
+      'household_id,greeting_name,side,guests\nsmith,The Smith Family,both,  Anna   Smith ; Ben Smith;\tChloe Smith  ;\n',
+    );
+
+    expect(rows[0].guests).toEqual(['Anna Smith', 'Ben Smith', 'Chloe Smith']);
+  });
+
+  it('enables a plus one for any value other than empty or false', () => {
+    const rows = parseGuestsCsv(
+      'household_id,greeting_name,side,guests,has_plus_one\n' +
+        'a,A,both,Anna,yes\n' +
+        'b,B,both,Ben,TRUE\n' +
+        'c,C,both,Chloe,false\n' +
+        'd,D,both,Dan,\n' +
+        'e,E,both,Eve,FALSE\n',
+    );
+
+    expect(rows.map((row) => row.plusOneAllowed)).toEqual([true, true, false, false, false]);
+  });
+
+  it('treats a missing has_plus_one column as no plus one', () => {
+    const rows = parseGuestsCsv('household_id,greeting_name,side,guests\na,A,both,Anna\n');
+
+    expect(rows[0].plusOneAllowed).toBe(false);
   });
 
   it('rejects an unknown side', () => {

@@ -10,6 +10,7 @@ export type Household = {
   greetingName: string;
   side: Side | null;
   guests: Guest[];
+  plusOneAllowed: boolean;
 };
 
 export type RsvpAnswer = {
@@ -47,6 +48,7 @@ export async function findHousehold(code: string): Promise<Household | null> {
     greetingName: data.greetingName,
     side: data.side ?? null,
     guests: (data.guests ?? []) as Guest[],
+    plusOneAllowed: data.plusOneAllowed ?? false,
   };
 }
 
@@ -78,6 +80,34 @@ export async function saveRsvps(
       : await client.models.RSVP.create(input);
     if (result.errors?.length) throw new Error(result.errors[0].message);
   }
+}
+
+export async function addPlusOneToHousehold(
+  householdCode: string,
+  guests: Guest[],
+  plusOneName: string,
+): Promise<Guest[]> {
+  const plusOne = { id: `${householdCode}-plus-one`, name: plusOneName };
+  const updated = [...guests.filter((guest) => guest.id !== plusOne.id), plusOne];
+  if (import.meta.env.DEV && householdCode === DEMO_CODE) return updated;
+
+  const result = await client.models.Household.update({ householdCode, guests: updated });
+  if (result.errors?.length) throw new Error(result.errors[0].message);
+  return updated;
+}
+
+export type NotificationSignup = { householdCode: string; email?: string; phone?: string };
+
+export async function saveNotificationSignup(signup: NotificationSignup): Promise<void> {
+  if (import.meta.env.DEV && signup.householdCode === DEMO_CODE) return;
+
+  const result = await client.models.NotificationSignup.create({
+    householdCode: signup.householdCode,
+    email: signup.email,
+    phone: signup.phone,
+    createdAt: new Date().toISOString(),
+  });
+  if (result.errors?.length) throw new Error(result.errors[0].message);
 }
 
 export async function recordProgress(householdCode: string, step: ProgressStep): Promise<void> {
