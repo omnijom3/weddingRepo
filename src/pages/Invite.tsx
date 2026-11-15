@@ -4,7 +4,12 @@ import CinematicIntro from '../components/CinematicIntro';
 import PageHeader from '../components/PageHeader';
 import { introLines } from '../data/intro';
 import { prefersReducedMotion } from '../lib/motion';
-import { findHousehold, rememberHouseholdCode, type Household } from '../lib/households';
+import {
+  findHousehold,
+  recordProgress,
+  rememberHouseholdCode,
+  type Household,
+} from '../lib/households';
 import Home from './Home';
 
 type LoadState =
@@ -30,6 +35,7 @@ export default function Invite() {
         if (!active) return;
         if (household) {
           rememberHouseholdCode(household.householdCode);
+          void recordProgress(household.householdCode, 'invite-opened');
           setState({ status: 'found', household });
         } else {
           setState({ status: 'missing' });
@@ -48,10 +54,12 @@ export default function Invite() {
   const markIntroDone = useCallback(() => {
     sessionStorage.setItem(introSeenKey(code), 'true');
     setIntroDone(true);
+    void recordProgress(code, 'intro-complete');
   }, [code]);
 
   useEffect(() => {
-    if (sessionStorage.getItem(introSeenKey(code)) || prefersReducedMotion()) {
+    const replayForDemo = import.meta.env.DEV && code === 'demo';
+    if ((!replayForDemo && sessionStorage.getItem(introSeenKey(code))) || prefersReducedMotion()) {
       setIntroDone(true);
     }
   }, [code]);

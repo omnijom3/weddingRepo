@@ -10,7 +10,11 @@ const schema = a.schema({
       notes: a.string(),
     })
     .identifier(['householdCode'])
-    .authorization((allow) => [allow.guest().to(['get']), allow.authenticated('userPools')]),
+    .authorization((allow) => [
+      allow.guest().to(['get']),
+      allow.groups(['admins']).to(['read']),
+      allow.groups(['seeder']).to(['create', 'update', 'read']),
+    ]),
   RSVP: a
     .model({
       householdCode: a.string().required(),
@@ -24,7 +28,18 @@ const schema = a.schema({
     .identifier(['householdCode', 'guestId'])
     .authorization((allow) => [
       allow.guest().to(['create', 'update', 'get']),
-      allow.authenticated('userPools'),
+      allow.groups(['admins']).to(['read']),
+    ]),
+  Progress: a
+    .model({
+      householdCode: a.string().required(),
+      step: a.string().required(),
+      completedAt: a.string().required(),
+    })
+    .identifier(['householdCode', 'step'])
+    .authorization((allow) => [
+      allow.guest().to(['create', 'get']),
+      allow.groups(['admins']).to(['read']),
     ]),
 });
 

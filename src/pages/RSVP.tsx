@@ -7,6 +7,7 @@ import {
   findHousehold,
   rememberedHouseholdCode,
   rememberHouseholdCode,
+  recordProgress,
   saveRsvps,
   type Household,
   type RsvpAnswer,
@@ -101,6 +102,7 @@ export default function RSVP() {
 
     try {
       await saveRsvps(household.householdCode, side, answers);
+      void recordProgress(household.householdCode, 'rsvp-submitted');
       setIsSubmitted(true);
       triggerPhoto(side);
     } catch (err: unknown) {
@@ -217,10 +219,7 @@ export default function RSVP() {
                   <select
                     id={`meal-${guest.guestId}`}
                     value={guest.mealChoice}
-                    onChange={(e) => {
-                      updateGuest(guest.guestId, { mealChoice: e.target.value });
-                      triggerPhoto(side);
-                    }}
+                    onChange={(e) => updateGuest(guest.guestId, { mealChoice: e.target.value })}
                     className="form-input"
                   >
                     {mealOptions.map((meal) => (

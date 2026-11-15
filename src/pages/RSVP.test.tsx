@@ -4,18 +4,23 @@ import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import RSVP from './RSVP';
 
-const { householdGet, rsvpGet, rsvpCreate, rsvpUpdate } = vi.hoisted(() => ({
-  householdGet: vi.fn(),
-  rsvpGet: vi.fn(),
-  rsvpCreate: vi.fn(),
-  rsvpUpdate: vi.fn(),
-}));
+const { householdGet, rsvpGet, rsvpCreate, rsvpUpdate, progressGet, progressCreate } = vi.hoisted(
+  () => ({
+    householdGet: vi.fn(),
+    rsvpGet: vi.fn(),
+    rsvpCreate: vi.fn(),
+    rsvpUpdate: vi.fn(),
+    progressGet: vi.fn(),
+    progressCreate: vi.fn(),
+  }),
+);
 
 vi.mock('../lib/amplifyClient', () => ({
   client: {
     models: {
       Household: { get: householdGet },
       RSVP: { get: rsvpGet, create: rsvpCreate, update: rsvpUpdate },
+      Progress: { get: progressGet, create: progressCreate },
     },
   },
 }));
@@ -51,6 +56,8 @@ describe('RSVP form', () => {
     rsvpGet.mockReset().mockResolvedValue({ data: null, errors: undefined });
     rsvpCreate.mockReset().mockResolvedValue({ data: {}, errors: undefined });
     rsvpUpdate.mockReset().mockResolvedValue({ data: {}, errors: undefined });
+    progressGet.mockReset().mockResolvedValue({ data: null, errors: undefined });
+    progressCreate.mockReset().mockResolvedValue({ data: {}, errors: undefined });
   });
 
   it('shows an error when the invite code is not recognised', async () => {
@@ -129,6 +136,18 @@ describe('RSVP form', () => {
     await user.click(screen.getByLabelText("Rosie's"));
 
     expect(container.querySelector('.photo-animation--rosie')).toBeInTheDocument();
+  });
+
+  it('never plays the both photo unless Both is chosen', async () => {
+    const user = userEvent.setup();
+    const { container } = renderRSVP();
+
+    await enterCode(user);
+    await user.click(screen.getByLabelText("Joe's"));
+    expect(container.querySelector('.photo-animation--both')).not.toBeInTheDocument();
+
+    await user.selectOptions(screen.getAllByLabelText(/meal selection/i)[0], 'Vegetarian');
+    expect(container.querySelector('.photo-animation--both')).not.toBeInTheDocument();
   });
 
   it('shows an error banner when the request fails', async () => {

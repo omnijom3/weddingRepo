@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Envelope from '../components/Envelope';
 import PetalShower from '../components/PetalShower';
-import type { Household } from '../lib/households';
+import { recordProgress, type Household } from '../lib/households';
 import './Home.css';
 
 function InvitationCard({ household }: { household?: Household }) {
@@ -60,7 +60,13 @@ export default function Home({ household }: { household?: Household }) {
       {isOpen && <PetalShower />}
 
       <div className="envelope-scene">
-        <Envelope isOpen={isOpen} onOpen={() => setIsOpen(true)}>
+        <Envelope
+          isOpen={isOpen}
+          onOpen={() => {
+            setIsOpen(true);
+            if (household) void recordProgress(household.householdCode, 'envelope-opened');
+          }}
+        >
           {isOpen && <InvitationCard household={household} />}
         </Envelope>
       </div>

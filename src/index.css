@@ -89,11 +89,14 @@ body {
 .site-link {
   color: var(--text-body);
   text-decoration: none;
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
 }
 
-.site-link--accent {
-  color: var(--color-rose);
+.site-link--active {
+  color: var(--text-main);
   font-weight: bold;
+  border-bottom-color: var(--color-rose);
 }
 
 .site-main {
@@ -120,6 +123,10 @@ body {
 .page {
   max-width: 800px;
   margin: 0 auto;
+  background-color: var(--bg-cream);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: var(--shadow-soft);
 }
 
 .page-header {

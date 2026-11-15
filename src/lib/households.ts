@@ -1,4 +1,5 @@
 import { client } from './amplifyClient';
+import type { ProgressStep } from '../data/progress';
 
 export type Side = 'rosie' | 'joe' | 'both';
 
@@ -76,5 +77,24 @@ export async function saveRsvps(
       ? await client.models.RSVP.update(input)
       : await client.models.RSVP.create(input);
     if (result.errors?.length) throw new Error(result.errors[0].message);
+  }
+}
+
+export async function recordProgress(householdCode: string, step: ProgressStep): Promise<void> {
+  if (import.meta.env.DEV && householdCode === DEMO_CODE) return;
+
+  try {
+    const key = { householdCode, step };
+    const existing = await client.models.Progress.get(key);
+    if (existing.errors?.length) throw new Error(existing.errors[0].message);
+    if (existing.data) return;
+
+    const result = await client.models.Progress.create({
+      ...key,
+      completedAt: new Date().toISOString(),
+    });
+    if (result.errors?.length) throw new Error(result.errors[0].message);
+  } catch (err: unknown) {
+    console.error(`Error recording progress step ${step}:`, err);
   }
 }

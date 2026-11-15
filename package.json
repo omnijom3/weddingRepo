@@ -9,6 +9,7 @@
     "typecheck": "tsc -p .",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "seed": "tsx scripts/seed-households.ts",
     "test": "vitest run"
   },
   "repository": {
